@@ -7,12 +7,30 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ *
  */
-#[ApiResource]
+#[
+    ORM\UniqueConstraint(fields: ['email', 'username']),
+    UniqueEntity(
+      fields: ['email'],
+      message: 'This email already exists'
+    ),
+    UniqueEntity(
+        fields: ['username'],
+        message: 'This username already exists'
+    ),
+    ApiResource(
+    collectionOperations: ['get', 'post'],
+    itemOperations: ['get'],
+    normalizationContext: ['groups' => ['read']]
+)]
 class User implements UserInterface
 {
     /**
@@ -20,21 +38,62 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[
+        Groups(['read'])
+    ]
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[
+        Groups(['read']),
+        Assert\NotBlank
+    ]
     private $username;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[
+        Assert\NotBlank,
+    ]
     private $password;
+
+    /**
+     * @Assert\Expression(
+     *     expression="this.getPassword() === this.getRetypedPassword()",
+     *     message="Passwords do not match."
+     * )
+     */
+    #[
+        Assert\NotBlank,
+        ]
+    private $retypedPassword;
+
+    /**
+     * @return mixed
+     */
+    public function getRetypedPassword()
+    {
+        return $this->retypedPassword;
+    }
+
+    /**
+     * @param mixed $retypedPassword
+     */
+    public function setRetypedPassword(string $retypedPassword): void
+    {
+        $this->retypedPassword = $retypedPassword;
+    }
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[
+        Assert\NotBlank,
+        Assert\Email,
+        ]
     private $email;
 
     /**
@@ -45,11 +104,18 @@ class User implements UserInterface
     /**
      * @ORM\OnetoMany(targetEntity="App\Entity\Comment", mappedBy="author")
      */
+    #[
+        Groups(['read'])
+    ]
     private $comments;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[
+        Groups(['read']),
+        Assert\NotBlank
+    ]
     private $name;
 
     public function __construct()
@@ -169,6 +235,5 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
     }
 }
