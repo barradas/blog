@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         message: 'This username already exists'
     ),
     ApiResource(
-    collectionOperations: ['get', 'post'],
+    collectionOperations: ['get' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"], 'post'],
     itemOperations: ['get'],
     normalizationContext: ['groups' => ['read']]
 )]
