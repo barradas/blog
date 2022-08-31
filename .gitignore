@@ -19,7 +19,7 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
-/.DS_Store
+.DS_Store
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
