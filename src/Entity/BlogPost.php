@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  */
@@ -16,8 +15,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     ApiResource(
         collectionOperations: [
             'get' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"],
-            'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]],
-        itemOperations: ['get'],
+            'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]
+        ],
+        itemOperations: [
+            'get',
+            'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
+        ],
     )
 ]
 class BlogPost
@@ -151,9 +154,10 @@ class BlogPost
     }
 
     /**
-     * @param mixed $author
+     * @param User $author
+     * @return $this
      */
-    public function setAuthor($author): self
+    public function setAuthor(User $author): self
     {
         $this->author = $author;
 
