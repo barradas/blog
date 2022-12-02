@@ -27,8 +27,24 @@ use Symfony\Component\Validator\Constraints as Assert;
         message: 'This username already exists'
     ),
     ApiResource(
-    collectionOperations: ['get' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"], 'post'],
-    itemOperations: ['get'],
+    collectionOperations: [
+        "get" => [
+            "access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"
+        ],
+        'post' => [
+            "denormalization_context" => ["groups" => ["post"]]
+        ]
+    ],
+    itemOperations: [
+        'get' => [
+            "access_control" => "is_granted('IS_AUTHENTICATED_FULLY')",
+            "normalization_context" => ["get"]
+            ],
+        'put' => [
+            "access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+            "denormalization_context" => ["groups" => ["put"]]
+        ]
+    ],
     normalizationContext: ['groups' => ['read']]
 )]
 class User implements UserInterface
@@ -47,7 +63,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(['read']),
+        Groups(["get", "post", "post"]),
         Assert\NotBlank
     ]
     private $username;
@@ -56,6 +72,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
+        Groups(["put", "post"]),
         Assert\NotBlank,
     ]
     private $password;
@@ -67,6 +84,7 @@ class User implements UserInterface
      * )
      */
     #[
+        Groups(["put", "post"]),
         Assert\NotBlank,
         ]
     private $retypedPassword;
@@ -91,6 +109,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
+        Groups(["put", "post"]),
         Assert\NotBlank,
         Assert\Email,
         ]
@@ -113,7 +132,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     #[
-        Groups(['read']),
+        Groups(['read', 'put', 'post']),
         Assert\NotBlank
     ]
     private $name;

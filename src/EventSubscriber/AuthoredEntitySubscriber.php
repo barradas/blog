@@ -37,18 +37,17 @@ class AuthoredEntitySubscriber implements EventSubscriberInterface
 
     public function getAuthenticatedUser(ViewEvent $event)
     {
-        $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
-        /** @var UserInterface $author */
-        $author = $this->tokenStorage->getToken()->getUser();
-        $entity->setAuthor($author);
-
-        if (!$entity instanceof BlogPost || Request::METHOD_POST !== $method) {
+        if ($event->getRequest()->attributes->all()['_api_resource_class'] !== 'App\Entity\BlogPost' || Request::METHOD_POST !== $method) {
             return;
         }
 
-        $entity->setAuthor($author);
+        $entity = $event->getControllerResult();
 
+        /** @var UserInterface $author */
+        $author = $this->tokenStorage->getToken()->getUser();
+
+        $entity->setAuthor($author);
     }
 }
