@@ -1,16 +1,20 @@
 <?php
 
 namespace App\Entity;
+
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\BlogPostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Image;
+
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
  */
-
 #[
     ApiResource(
         collectionOperations: [
@@ -21,6 +25,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             'get',
             'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
         ],
+        denormalizationContext: [
+            'groups' => [
+                'post'
+            ]
+        ]
     )
 ]
 class BlogPost
@@ -37,7 +46,8 @@ class BlogPost
      */
     #[
         Assert\NotBlank,
-        Assert\Length(min: 10)
+        Assert\Length(min: 10),
+        Groups(['post'])
     ]
     private $title;
 
@@ -46,6 +56,7 @@ class BlogPost
      */
     #[
         Assert\NotBlank,
+        Groups(['post'])
     ]
     private $published;
 
@@ -54,7 +65,8 @@ class BlogPost
      */
     #[
         Assert\NotBlank,
-        Assert\Length(min: 20)
+        Assert\Length(min: 20),
+        Groups(['post'])
     ]
     private $content;
 
@@ -75,13 +87,25 @@ class BlogPost
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     #[
-        Assert\NotBlank
+        Assert\NotBlank,
+        Groups(['post'])
     ]
     private $slug;
 
 
-    public function __construct(){
+    /**
+     * @ORM\ManyToMany(targetEntity="Image")
+     * @ORM\JoinTable()
+     * @ApiSubResource()
+     * @Groups({"post"})
+     */
+    private ArrayCollection $images;
+
+
+    public function __construct()
+    {
         $this->comments = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -160,6 +184,37 @@ class BlogPost
     public function setAuthor(User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param Image $image
+     * @return $this
+     */
+    public function setImage(Image $image)
+    {
+        $this->images->add($image);
+
+        return $this;
+    }
+
+
+    /**
+     * @param Image $image
+     * @return $this
+     */
+    public function removeImage(Image $image)
+    {
+        $this->images->remove($image);
 
         return $this;
     }
