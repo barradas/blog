@@ -63,7 +63,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(["get", "post", "post"]),
+        Groups(['get', 'post']),
         Assert\NotBlank
     ]
     private $username;
@@ -72,7 +72,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(["put", "post"]),
+        Groups(['put', 'post']),
         Assert\NotBlank,
     ]
     private $password;

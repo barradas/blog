@@ -81,6 +81,9 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="blogPost")
      * @ORM\JoinColumn(nullable="false");
      */
+    #[
+        ApiSubResource()
+    ]
     private $comments;
 
 
