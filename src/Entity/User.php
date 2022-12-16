@@ -32,7 +32,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             "access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"
         ],
         'post' => [
-            "denormalization_context" => ["groups" => ["post"]]
+            "denormalization_context" => ["groups" => ["post"]],
+            "normalization_context" => ['groups' => ['get']]
         ]
     ],
     itemOperations: [
@@ -42,7 +43,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             ],
         'put' => [
             "access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object == user",
-            "denormalization_context" => ["groups" => ["put"]]
+            "denormalization_context" => ["groups" => ["put"]],
+            "normnalization_context" => ["groups" => ["get"]]
         ]
     ],
     normalizationContext: ['groups' => ['read']]
@@ -55,7 +57,7 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      */
     #[
-        Groups(['read'])
+        Groups(['get'])
     ]
     private $id;
 
@@ -63,7 +65,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(['get', 'post']),
+        Groups(['get', 'post', 'get-comment-with-author']),
         Assert\NotBlank
     ]
     private $username;
@@ -132,7 +134,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     #[
-        Groups(['read', 'put', 'post']),
+        Groups(['get', 'put', 'post', 'get-comment-with-author']),
         Assert\NotBlank
     ]
     private $name;
