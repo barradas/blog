@@ -7,6 +7,8 @@ use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
 use App\Entity\BlogPost;
+use App\Entity\AuthoredEntityInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
@@ -15,7 +17,7 @@ use App\Entity\BlogPost;
     collectionOperations: ['get', 'post'],
     itemOperations: ['get'],
 )]
-class Comment
+class Comment implements AuthoredEntityInterface
 {
     /**
      * @ORM\Id
@@ -103,10 +105,10 @@ class Comment
     }
 
     /**
-     * @param User $author
+     * @param UserInterface $author
      * @return Comment
      */
-    public function setAuthor(User $author): self
+    public function setAuthor(UserInterface $author): AuthoredEntityInterface
     {
         $this->author = $author;
 
