@@ -65,7 +65,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(['get', 'post', 'get-comment-with-author']),
+        Groups(['get', 'post', 'get-comment-with-author', 'get-blog-post-with-author']),
         Assert\NotBlank
     ]
     private $username;
@@ -134,7 +134,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     #[
-        Groups(['get', 'put', 'post', 'get-comment-with-author']),
+        Groups(['get', 'put', 'post', 'get-comment-with-author', 'get-blog-post-with-author']),
         Assert\NotBlank
     ]
     private $name;

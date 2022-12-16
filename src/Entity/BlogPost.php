@@ -20,7 +20,11 @@ use App\Entity\AuthoredEntityInterface;
 #[
     ApiResource(
         collectionOperations: [
-            'get' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"],
+            'get' => [
+                "normalization_context" => [
+                   "groups" => ["get-blog-post-with-author"],
+                ]
+            ],
             'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]
         ],
         itemOperations: [
@@ -41,6 +45,9 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[
+        Groups(['get-blog-post-with-author'])
+    ]
     private $id;
 
     /**
@@ -49,7 +56,7 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
     #[
         Assert\NotBlank,
         Assert\Length(min: 10),
-        Groups(['post'])
+        Groups(['post', 'get-blog-post-with-author'])
     ]
     private $title;
 
@@ -57,7 +64,7 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\Column(type="datetime")
      */
     #[
-        Groups(['post'])
+        Groups(['post', 'get-blog-post-with-author'])
     ]
     private $published;
 
@@ -67,7 +74,7 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
     #[
         Assert\NotBlank,
         Assert\Length(min: 20),
-        Groups(['post'])
+        Groups(['post', 'get-blog-post-with-author'])
     ]
     private $content;
 
@@ -75,6 +82,9 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(nullable="false")
      */
+    #[
+        Groups(['post', 'get-blog-post-with-author'])
+    ]
     private $author;
 
     /**
@@ -82,7 +92,8 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\JoinColumn(nullable="false");
      */
     #[
-        ApiSubResource()
+        ApiSubResource(),
+        Groups(['post', 'get-blog-post-with-author'])
     ]
     private $comments;
 
@@ -92,7 +103,7 @@ class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
      */
     #[
         Assert\NotBlank,
-        Groups(['post'])
+        Groups(['post', 'get-blog-post-with-author'])
     ]
     private $slug;
 
