@@ -34,7 +34,7 @@ use App\Entity\AuthoredEntityInterface;
         ]
     )
 ]
-class BlogPost implements AuthoredEntityInterface
+class BlogPost implements AuthoredEntityInterface, PublishedDateEntityInterface
 {
     /**
      * @ORM\Id
@@ -57,7 +57,6 @@ class BlogPost implements AuthoredEntityInterface
      * @ORM\Column(type="datetime")
      */
     #[
-        Assert\NotBlank,
         Groups(['post'])
     ]
     private $published;
@@ -99,8 +98,11 @@ class BlogPost implements AuthoredEntityInterface
      * @ORM\ManyToMany(targetEntity="Image")
      * @ORM\JoinTable()
      * @ApiSubResource()
-     * @Groups({"post"})
      */
+    #[
+        Assert\NotBlank,
+        Groups(['post'])
+    ]
     private $images;
 
 
@@ -140,7 +142,7 @@ class BlogPost implements AuthoredEntityInterface
         return $this->published;
     }
 
-    public function setPublished(\DateTimeInterface $published): self
+    public function setPublished(\DateTimeInterface $published): PublishedDateEntityInterface
     {
         $this->published = $published;
 

@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Entity\BlogPost;
 use App\Entity\AuthoredEntityInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
@@ -19,8 +20,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
         'get',
         'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
     ],
+    denormalizationContext: [
+        'groups' => [
+            'post'
+        ]
+    ]
 )]
-class Comment implements AuthoredEntityInterface
+class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
 {
     /**
      * @ORM\Id
@@ -32,6 +38,11 @@ class Comment implements AuthoredEntityInterface
     /**
      * @ORM\Column(type="text")
      */
+    #[
+        Groups(['post']),
+        Assert\NotBlank,
+        Assert\Length(min:5, max:3000)
+    ]
     private $content;
 
     /**
@@ -92,7 +103,7 @@ class Comment implements AuthoredEntityInterface
         return $this->published;
     }
 
-    public function setPublished(\DateTimeInterface $published): self
+    public function setPublished(\DateTimeInterface $published): PublishedDateEntityInterface
     {
         $this->published = $published;
 
