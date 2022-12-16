@@ -14,8 +14,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Entity(repositoryClass=CommentRepository::class)
  */
 #[ApiResource(
-    collectionOperations: ['get', 'post'],
-    itemOperations: ['get'],
+    collectionOperations: ['get', 'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]],
+    itemOperations: [
+        'get',
+        'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
+    ],
 )]
 class Comment implements AuthoredEntityInterface
 {
