@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use App\Repository\BlogPostRepository;
@@ -13,6 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Image;
 use App\Entity\AuthoredEntityInterface;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=BlogPostRepository::class)
@@ -31,10 +33,22 @@ use App\Entity\AuthoredEntityInterface;
             'get',
             'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
         ],
+        attributes: [
+            'order' => ['published' => 'DESC']
+        ],
         denormalizationContext: [
             'groups' => [
                 'post'
             ]
+        ]
+    ),
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'id' => 'exact',
+            'title' => 'partial',
+            'content' => 'partial',
+            'author' => 'partial'
         ]
     )
 ]

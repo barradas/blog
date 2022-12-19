@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
@@ -26,12 +28,24 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'get',
         'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
     ],
+    attributes: [
+        'order' => ['published' => 'DESC']
+    ],
     denormalizationContext: [
         'groups' => [
             'post'
         ]
     ]
-)]
+),
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'id' => 'exact',
+            'content' => 'partial',
+            'author' => 'partial'
+        ]
+    )
+]
 class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
 {
     /**
