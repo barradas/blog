@@ -44,10 +44,10 @@ use Symfony\Component\Validator\Constraints as Assert;
         'put' => [
             "access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object == user",
             "denormalization_context" => ["groups" => ["put"]],
-            "normnalization_context" => ["groups" => ["get"]]
+            "normalization_context" => ["groups" => ["get"]]
         ]
     ],
-    normalizationContext: ['groups' => ['read']]
+    normalizationContext: ['groups' => ['get']]
 )]
 class User implements UserInterface
 {
@@ -65,7 +65,7 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     #[
-        Groups(['get', 'post', 'get-comment-with-author', 'get-blog-post-with-author']),
+        Groups(['put', 'get', 'post', 'get-comment-with-author', 'get-blog-post-with-author']),
         Assert\NotBlank
     ]
     private $username;
