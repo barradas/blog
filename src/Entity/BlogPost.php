@@ -28,7 +28,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                    "groups" => ["get-blog-post-with-author"],
                 ]
             ],
-            'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]
+            'post' => ["access_control" => "is_granted('ROLE_WRITER')"]
         ],
         itemOperations: [
             'get' => [
@@ -36,7 +36,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
                     "groups" => ["get-blog-post-with-author"],
                 ]
             ],
-            'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
+            'put' => ["access_control" => "is_granted('ROLE_EDITOR') or (is_granted('ROLE_WRITER') and object.getAuthor() == user)"]
         ],
         attributes: [
             'order' => ['published' => 'DESC']

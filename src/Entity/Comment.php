@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 "groups" => ["get-comment-with-author"],
             ]
         ],
-        'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"],
+        'post' => ["access_control" => "is_granted('ROLE_COMMENTATOR')"],
         'api_blog_posts_comments_get_subresource' => [
             "normalizationContext" => ['groups' => ['get-comment-with-author']],
         ],
@@ -34,7 +34,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 "groups" => ["get-comment-with-author"],
             ]
         ],
-        'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
+        'put' => ["access_control" => "is_granted(ROLE_EDITOR) or (is_granted('ROLE_COMMENTATOR') and object.getAuthor() == user)"]
     ],
     attributes: [
         'order' => ['published' => 'DESC']
