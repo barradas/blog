@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
 use App\Repository\BlogPostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,7 +31,11 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"]
         ],
         itemOperations: [
-            'get',
+            'get' => [
+                "normalization_context" => [
+                    "groups" => ["get-blog-post-with-author"],
+                ]
+            ],
             'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
         ],
         attributes: [
@@ -49,6 +54,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
             'title' => 'partial',
             'content' => 'partial',
             'author' => 'partial'
+        ]
+    ),
+    ApiFilter(
+        DateFilter::class,
+        properties: [
+            'published'
         ]
     )
 ]

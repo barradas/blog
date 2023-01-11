@@ -18,14 +18,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 #[ApiResource(
     collectionOperations: [
-        'get',
+        'get' => [
+            "normalization_context" => [
+                "groups" => ["get-comment-with-author"],
+            ]
+        ],
         'post' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY')"],
         'api_blog_posts_comments_get_subresource' => [
             "normalizationContext" => ['groups' => ['get-comment-with-author']],
         ],
     ],
     itemOperations: [
-        'get',
+        'get' => [
+            "normalization_context" => [
+                "groups" => ["get-comment-with-author"],
+            ]
+        ],
         'put' => ["access_control" => "is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"]
     ],
     attributes: [
@@ -68,6 +76,9 @@ class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
     /**
      * @ORM\Column(type="datetime")
      */
+    #[
+        Groups(['get-comment-with-author']),
+    ]
     private $published;
 
     /**
@@ -84,6 +95,9 @@ class Comment implements AuthoredEntityInterface, PublishedDateEntityInterface
      * @ORM\ManyToOne(targetEntity="App\Entity\BlogPost", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false)
      */
+    #[
+        Groups(['get-comment-with-author']),
+    ]
     private BlogPost $blogPost;
 
     /**
