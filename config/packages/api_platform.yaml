@@ -18,3 +18,5 @@ api_platform:
             client_items_per_page: true
             items_per_page_parameter_name: itemsPerPage
             maximum_items_per_page: 100
+    exception_to_status:
+        App\Exception\EmptyBodyException: 400
